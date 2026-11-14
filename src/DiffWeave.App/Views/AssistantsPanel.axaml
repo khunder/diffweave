@@ -12,7 +12,7 @@
         <DockPanel>
           <Button x:Name="CloseButton" DockPanel.Dock="Right" Padding="6,2" ToolTip.Tip="Hide the assistants panel"
                   AutomationProperties.Name="Close assistants panel">
-            <PathIcon Width="10" Height="10" Data="M1 1L9 9M9 1L1 9" />
+            <PathIcon Width="10" Height="10" Data="M2.3 1L5 3.7L7.7 1L9 2.3L6.3 5L9 7.7L7.7 9L5 6.3L2.3 9L1 7.7L3.7 5L1 2.3Z" />
           </Button>
           <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
             <PathIcon Width="16" Height="16" Foreground="{DynamicResource DW.Accent}"

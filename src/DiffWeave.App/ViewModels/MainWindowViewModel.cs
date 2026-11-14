@@ -294,6 +294,8 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDocumentHos
             await ReportErrorAsync("Cannot compare directories", ex.Message);
         }
 
+        UpdateStatus();
+
         return view;
     }
 

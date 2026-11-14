@@ -44,7 +44,7 @@ public partial class DirectoryView : UserControl
         CopyRightButton.Click += async (_, _) => await CopySelectedAsync(0, 1);
         CopyLeftButton.Click += async (_, _) => await CopySelectedAsync(1, 0);
         List.DoubleTapped += (_, e) => ActivateSelected(e);
-        List.KeyDown += OnListKeyDown;
+        List.AddHandler(KeyDownEvent, OnListKeyDown, RoutingStrategies.Tunnel);
         List.AddHandler(PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
         document.Rows.CollectionChanged += (_, _) => EmptyText.IsVisible = document.Rows.Count == 0;
         ActualThemeVariantChanged += (_, _) => List.ItemsSource = null;
@@ -76,7 +76,7 @@ public partial class DirectoryView : UserControl
         await Document.CompareAsync();
         EmptyText.Text = "No entries match the filter.";
         EmptyText.IsVisible = Document.Rows.Count == 0;
-        StatusMessage?.Invoke(this, Document.Summary);
+        StatusMessage?.Invoke(this, $"Compared {Document.Roots.Count} directories.");
     }
 
     /// <summary>Activates a row: toggles directories, opens files.</summary>

@@ -281,7 +281,7 @@
         <CheckBox x:Name="FindRegex" Content="Regex" />
         <CheckBox x:Name="FindWord" Content="Whole word" />
         <Button x:Name="FindClose" Classes="tool" ToolTip.Tip="Close (Esc)" AutomationProperties.Name="Close find bar">
-          <PathIcon Width="10" Height="10" Data="M1 1L9 9M9 1L1 9" />
+          <PathIcon Width="10" Height="10" Data="M2.3 1L5 3.7L7.7 1L9 2.3L6.3 5L9 7.7L7.7 9L5 6.3L2.3 9L1 7.7L3.7 5L1 2.3Z" />
         </Button>
       </StackPanel>
     </Border>
@@ -292,7 +292,7 @@
         <TextBox x:Name="GoToText" Width="120" PlaceholderText="Line number" AutomationProperties.Name="Line number" />
         <Button x:Name="GoToButton" Content="Go" Classes="accent" />
         <Button x:Name="GoToClose" Classes="tool" AutomationProperties.Name="Close go to line">
-          <PathIcon Width="10" Height="10" Data="M1 1L9 9M9 1L1 9" />
+          <PathIcon Width="10" Height="10" Data="M2.3 1L5 3.7L7.7 1L9 2.3L6.3 5L9 7.7L7.7 9L5 6.3L2.3 9L1 7.7L3.7 5L1 2.3Z" />
         </Button>
       </StackPanel>
     </Border>
@@ -305,7 +305,7 @@
               <TextBlock Text="{Binding Header}" FontSize="13" VerticalAlignment="Center" />
               <Button Classes="tool" Padding="3" MinHeight="16" ToolTip.Tip="Close tab (Ctrl+W)"
                       Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CloseTabCommand}" CommandParameter="{Binding}">
-                <PathIcon Width="8" Height="8" Data="M1 1L9 9M9 1L1 9" />
+                <PathIcon Width="8" Height="8" Data="M2.3 1L5 3.7L7.7 1L9 2.3L6.3 5L9 7.7L7.7 9L5 6.3L2.3 9L1 7.7L3.7 5L1 2.3Z" />
               </Button>
             </StackPanel>
           </DataTemplate>
