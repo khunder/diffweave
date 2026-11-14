@@ -30,3 +30,18 @@ public static class Converters
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => throw new NotSupportedException();
     }
 }
+
+/// <summary>Converters comparing a value with the converter parameter (radio menu items).</summary>
+public static class EqualityConverters
+{
+    /// <summary>True when value.ToString() equals the parameter.</summary>
+    public static IValueConverter EqualsParameter { get; } = new EqualsParameterConverter();
+
+    private sealed class EqualsParameterConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+            => string.Equals(value?.ToString(), parameter?.ToString(), StringComparison.Ordinal);
+
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => throw new NotSupportedException();
+    }
+}

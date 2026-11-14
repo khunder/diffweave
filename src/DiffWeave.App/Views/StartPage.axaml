@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DiffWeave.App.ViewModels"
+             x:Class="DiffWeave.App.Views.StartPage"
+             x:DataType="vm:MainWindowViewModel">
+  <UserControl.Styles>
+    <Style Selector="Button.tile">
+      <Setter Property="Width" Value="200" />
+      <Setter Property="Height" Value="96" />
+      <Setter Property="Padding" Value="14,12" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="VerticalContentAlignment" Value="Top" />
+      <Setter Property="Background" Value="{DynamicResource DW.Card.Background}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource DW.Card.Border}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+  </UserControl.Styles>
+  <ScrollViewer>
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="32" Spacing="22" MaxWidth="680">
+      <StackPanel Orientation="Horizontal" Spacing="16">
+        <Image x:Name="Logo" Width="64" Height="64" />
+        <StackPanel VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="DiffWeave" FontSize="28" FontWeight="SemiBold" />
+          <TextBlock Text="Compare and merge files and folders" FontSize="14" Foreground="{DynamicResource DW.Subtle}" />
+        </StackPanel>
+      </StackPanel>
+      <WrapPanel Orientation="Horizontal">
+        <Button Classes="tile" Margin="0,0,12,12" Command="{Binding OpenFilesDialogCommand}">
+          <StackPanel Spacing="4">
+            <TextBlock Text="Compare files…" FontWeight="SemiBold" FontSize="14" />
+            <TextBlock Text="Two or three files side by side" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource DW.Subtle}" />
+          </StackPanel>
+        </Button>
+        <Button Classes="tile" Margin="0,0,12,12" Command="{Binding OpenMergeDialogCommand}">
+          <StackPanel Spacing="4">
+            <TextBlock Text="Merge…" FontWeight="SemiBold" FontSize="14" />
+            <TextBlock Text="Three-way merge into an output file" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource DW.Subtle}" />
+          </StackPanel>
+        </Button>
+        <Button Classes="tile" Margin="0,0,12,12" Command="{Binding OpenDirectoriesDialogCommand}">
+          <StackPanel Spacing="4">
+            <TextBlock Text="Compare folders…" FontWeight="SemiBold" FontSize="14" />
+            <TextBlock Text="Find added, removed and changed files" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource DW.Subtle}" />
+          </StackPanel>
+        </Button>
+      </WrapPanel>
+      <StackPanel Spacing="6" x:Name="RecentSection">
+        <TextBlock Text="Recent" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource DW.Subtle}" />
+        <ItemsControl x:Name="RecentList" />
+      </StackPanel>
+      <TextBlock FontSize="12" Foreground="{DynamicResource DW.Subtle}" TextWrapping="Wrap"
+                 Text="Tip: use diffweave as git's merge tool — git config --global merge.tool diffweave (see docs/git-integration.md)." />
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>
