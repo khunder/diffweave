@@ -5,7 +5,14 @@ using DiffWeave.App.Controls;
 namespace DiffWeave.App.Editor;
 
 /// <summary>A visible row of the text area (one row per line, or several when word wrap is on).</summary>
-public readonly record struct VisualRow(int Row, int Line, int Segment, int StartColumn, int EndColumn, double Top);
+public readonly record struct VisualRow(int Row, int Line, int Segment, int StartColumn, int EndColumn, double Top)
+{
+    /// <summary>The placeholder shown by this row, or null for a text row.</summary>
+    public PhantomRow? Phantom { get; init; }
+
+    /// <summary>True when the row is a placeholder rather than text.</summary>
+    public bool IsPhantom => Phantom is not null;
+}
 
 /// <summary>Everything a layer needs to paint one frame. Built once per frame by <see cref="DiffTextView"/>.</summary>
 public sealed class EditorRenderContext
@@ -47,7 +54,7 @@ public sealed class EditorRenderContext
     {
         foreach (VisualRow r in Rows)
         {
-            if (r.Line == line)
+            if (r.Line == line && r.Phantom is null)
             {
                 yield return r;
             }
@@ -87,6 +94,13 @@ public sealed class BackgroundLayer : IEditorLayer
         foreach (VisualRow row in frame.Rows)
         {
             Rect r = new(left, row.Top, width, frame.RowHeight);
+            if (row.Phantom is { } phantom)
+            {
+                context.FillRectangle(frame.Palette.LineBrush(phantom.Kind), r);
+                context.FillRectangle(frame.Palette.MarkBrush(phantom.Kind), new Rect(left, row.Top + (frame.RowHeight / 2) - 0.5, width, 1));
+                continue;
+            }
+
             if (lineKinds.TryGetValue(row.Line, out HighlightKind kind) && kind != HighlightKind.None)
             {
                 context.FillRectangle(frame.Palette.LineBrush(kind), r);
@@ -180,6 +194,16 @@ public sealed class TextLayer : IEditorLayer
     {
         foreach (VisualRow row in frame.Rows)
         {
+            if (row.Phantom is not null)
+            {
+                FormattedText label = frame.View.GetPhantomText(row.Phantom);
+                double lx = frame.TextLeft + (frame.View.CharWidth * 2);
+                Rect pill = new(lx - 6, row.Top + 2, label.Width + 12, frame.RowHeight - 4);
+                context.DrawRectangle(frame.Palette.LineBrush(row.Phantom.Kind), new Pen(frame.Palette.MarkBrush(row.Phantom.Kind), 1), pill, 3, 3);
+                context.DrawText(label, new Point(lx, row.Top + ((frame.RowHeight - label.Height) / 2)));
+                continue;
+            }
+
             FormattedText? text = frame.View.GetRowText(row);
             if (text is null)
             {
@@ -208,7 +232,7 @@ public sealed class SelectionLayer : IEditorLayer
         IBrush brush = frame.View.IsFocused ? frame.Palette.Selection : frame.Palette.SelectionInactive;
         foreach (VisualRow row in frame.Rows)
         {
-            if (row.Line < sel.Start.Line || row.Line > sel.End.Line)
+            if (row.IsPhantom || row.Line < sel.Start.Line || row.Line > sel.End.Line)
             {
                 continue;
             }

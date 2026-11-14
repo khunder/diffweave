@@ -43,3 +43,6 @@ public sealed record FindOptions(string Pattern, bool MatchCase = false, bool Us
         }
     }
 }
+
+/// <summary>A placeholder row shown before <see cref="BeforeLine"/> (may equal the line count to place it at the end).</summary>
+public sealed record PhantomRow(int BeforeLine, string Text, HighlightKind Kind);

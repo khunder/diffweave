@@ -75,8 +75,6 @@ public partial class DiffTextView : Control
     private double _rowHeight = 18;
     private bool _metricsValid;
     private int _maxDisplayLength;
-    private int[]? _rowPrefix;
-    private int _wrapColumns;
     private double _verticalOffset;
     private double _horizontalOffset;
     private Size _lastSize;
@@ -230,21 +228,6 @@ public partial class DiffTextView : Control
     /// <summary>Left edge of the text area.</summary>
     public double TextAreaLeft => GutterWidth + TextPadding;
 
-    /// <summary>Total number of visual rows.</summary>
-    public int RowCount
-    {
-        get
-        {
-            if (!WordWrap)
-            {
-                return LineCount;
-            }
-
-            EnsureRowPrefix();
-            return _rowPrefix![^1];
-        }
-    }
-
     /// <summary>Vertical scroll offset in pixels.</summary>
     public double VerticalOffset
     {
@@ -312,83 +295,6 @@ public partial class DiffTextView : Control
 
     /// <summary>Length (chars) of a line.</summary>
     public int LineLength(int line) => Source is { } s && line >= 0 && line < s.LineCount ? s.GetLine(line).Length : 0;
-
-    /// <summary>Converts a fractional line to a fractional visual row.</summary>
-    public double LineToRow(double line)
-    {
-        if (!WordWrap)
-        {
-            return line;
-        }
-
-        EnsureRowPrefix();
-        int[] p = _rowPrefix!;
-        int lines = p.Length - 1;
-        if (lines == 0)
-        {
-            return 0;
-        }
-
-        int whole = (int)Math.Floor(line);
-        if (whole >= lines)
-        {
-            return p[lines] + (line - lines);
-        }
-
-        if (whole < 0)
-        {
-            return line;
-        }
-
-        double frac = line - whole;
-        return p[whole] + (frac * (p[whole + 1] - p[whole]));
-    }
-
-    /// <summary>Converts a fractional visual row to a fractional line.</summary>
-    public double RowToLine(double row)
-    {
-        if (!WordWrap)
-        {
-            return row;
-        }
-
-        EnsureRowPrefix();
-        int[] p = _rowPrefix!;
-        int lines = p.Length - 1;
-        if (lines == 0 || row <= 0)
-        {
-            return Math.Max(0, row);
-        }
-
-        if (row >= p[lines])
-        {
-            return lines + (row - p[lines]);
-        }
-
-        int line = FindLineOfRow((int)Math.Floor(row));
-        int count = p[line + 1] - p[line];
-        return line + ((row - p[line]) / Math.Max(1, count));
-    }
-
-    private int FindLineOfRow(int row)
-    {
-        int[] p = _rowPrefix!;
-        int lo = 0, hi = p.Length - 2;
-        while (lo < hi)
-        {
-            int mid = (lo + hi + 1) >>> 1;
-            if (p[mid] <= row)
-            {
-                lo = mid;
-            }
-            else
-            {
-                hi = mid - 1;
-            }
-        }
-
-        return lo;
-    }
 
     /// <inheritdoc />
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -564,28 +470,6 @@ public partial class DiffTextView : Control
         _metricsValid = true;
     }
 
-    private void EnsureRowPrefix()
-    {
-        if (_rowPrefix is not null)
-        {
-            return;
-        }
-
-        EnsureMetrics();
-        int lines = LineCount;
-        int[] p = new int[lines + 1];
-        int width = Math.Max(8, (int)Math.Floor((Bounds.Width - TextAreaLeft - TextPadding) / _charWidth));
-        _wrapColumns = width;
-        int tab = TabSize;
-        for (int i = 0; i < lines; i++)
-        {
-            int len = DisplayLength(Source!.GetLine(i), tab);
-            p[i + 1] = p[i] + Math.Max(1, (len + width - 1) / width);
-        }
-
-        _rowPrefix = p;
-    }
-
     private static int DigitCount(int n) => n < 10 ? 1 : (int)Math.Floor(Math.Log10(n)) + 1;
 
     private static int DisplayLength(string line, int tab)
@@ -684,6 +568,13 @@ public partial class DiffTextView : Control
         return d;
     }
 
+    /// <summary>Returns the label layout of a phantom row.</summary>
+    internal FormattedText GetPhantomText(PhantomRow phantom)
+    {
+        FormattedText ft = new(phantom.Text, CultureInfo.InvariantCulture, FlowDirection.LeftToRight, new Typeface(_typeface.FontFamily, FontStyle.Italic), FontSize * 0.92, _palette.MarkBrush(phantom.Kind));
+        return ft;
+    }
+
     /// <summary>Returns the cached text layout for a visual row.</summary>
     internal FormattedText? GetRowText(VisualRow row)
     {
@@ -739,50 +630,6 @@ public partial class DiffTextView : Control
         return TextAreaLeft - _horizontalOffset + ((d.ToDisplay(column) - segStart) * CharWidth);
     }
 
-    /// <summary>Computes the visual rows intersecting the viewport.</summary>
-    public IReadOnlyList<VisualRow> GetVisibleRows()
-    {
-        List<VisualRow> rows = [];
-        if (Source is null || LineCount == 0)
-        {
-            return rows;
-        }
-
-        double rh = RowHeight;
-        int firstRow = Math.Max(0, (int)Math.Floor(_verticalOffset / rh));
-        int lastRow = Math.Min(RowCount - 1, (int)Math.Ceiling((_verticalOffset + Bounds.Height) / rh));
-        if (!WordWrap)
-        {
-            for (int r = firstRow; r <= lastRow; r++)
-            {
-                rows.Add(new VisualRow(r, r, 0, 0, LineLength(r), (r * rh) - _verticalOffset));
-            }
-
-            return rows;
-        }
-
-        EnsureRowPrefix();
-        int line = FindLineOfRow(firstRow);
-        int[] p = _rowPrefix!;
-        for (int r = firstRow; r <= lastRow && line < LineCount;)
-        {
-            int segments = p[line + 1] - p[line];
-            DisplayLine d = GetDisplayLine(line);
-            for (int seg = r - p[line]; seg < segments && r <= lastRow; seg++, r++)
-            {
-                int ds = seg * _wrapColumns;
-                int de = Math.Min(d.Text.Length, ds + _wrapColumns);
-                int sc = d.ToSource(ds);
-                int ec = seg == segments - 1 ? LineLength(line) : d.ToSource(de);
-                rows.Add(new VisualRow(r, line, seg, sc, ec, (r * rh) - _verticalOffset));
-            }
-
-            line++;
-        }
-
-        return rows;
-    }
-
     /// <summary>Collects decorations of all sources for a line range (also used by the overview ruler).</summary>
     public DecorationSink CollectDecorations(int firstLine, int lastLine)
     {
@@ -803,9 +650,9 @@ public partial class DiffTextView : Control
         context.FillRectangle(_palette.Background, bounds);
         IReadOnlyList<VisualRow> rows = GetVisibleRows();
         _sink.Clear();
-        if (rows.Count > 0)
+        if (rows.Count > 0 && LineCount > 0)
         {
-            int first = rows[0].Line, last = rows[^1].Line;
+            int first = rows[0].Line, last = Math.Min(rows[^1].Line, LineCount - 1);
             foreach (IEditorDecorationSource s in DecorationSources)
             {
                 s.GetDecorations(first, last + 1, _sink);
@@ -839,9 +686,15 @@ public partial class DiffTextView : Control
 
         foreach (VisualRow row in frame.Rows)
         {
+            if (row.Phantom is { } phantom)
+            {
+                context.FillRectangle(_palette.MarkBrush(phantom.Kind), new Rect(markerLeft + 1, row.Top, 3, frame.RowHeight));
+                continue;
+            }
+
             if (lineKinds.TryGetValue(row.Line, out HighlightKind kind) && kind != HighlightKind.None)
             {
-                context.FillRectangle(_palette.MarkBrush(kind), new Rect(markerLeft + 2, row.Top, 3, frame.RowHeight));
+                context.FillRectangle(_palette.MarkBrush(kind), new Rect(markerLeft + 1, row.Top, 3, frame.RowHeight));
             }
 
             if (ShowLineNumbers && row.Segment == 0)

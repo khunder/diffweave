@@ -102,10 +102,11 @@ public partial class DiffTextView
 
         double rh = RowHeight;
         double row = LineToRow(_caret.Line);
-        if (WordWrap)
+        if (WordWrap && LineCount > 0)
         {
             DisplayLine d = GetDisplayLine(_caret.Line);
-            row += Math.Min(d.ToDisplay(_caret.Column) / Math.Max(1, _wrapColumns), Math.Max(0, (_rowPrefix![_caret.Line + 1] - _rowPrefix[_caret.Line]) - 1));
+            int segments = (int)Math.Round(LineToRow(_caret.Line + 1) - row);
+            row += Math.Min(d.ToDisplay(_caret.Column) / Math.Max(1, _wrapColumns), Math.Max(0, segments - 1));
         }
 
         double top = row * rh;
@@ -516,17 +517,10 @@ public partial class DiffTextView
         }
 
         row = Math.Max(0, row);
-        int line;
-        int segStartDisplay = 0;
-        if (WordWrap)
+        (int line, int segStartDisplay, bool phantom) = LocateRow(row);
+        if (phantom)
         {
-            EnsureRowPrefix();
-            line = FindLineOfRow(row);
-            segStartDisplay = (row - _rowPrefix![line]) * _wrapColumns;
-        }
-        else
-        {
-            line = row;
+            return new TextPos(line, 0);
         }
 
         DisplayLine d = GetDisplayLine(line);
