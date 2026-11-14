@@ -110,24 +110,39 @@ internal static class LinePairing
 
         reversed.Reverse();
 
-        // Compact: an unpaired A line directly followed by an unpaired B line (or vice versa) share a row.
-        for (int k = 0; k < reversed.Count; k++)
+        // Between two paired rows, unpaired A and B lines are zipped top-down so that no filler is wasted.
+        var gapA = new List<int>();
+        var gapB = new List<int>();
+        void Flush()
         {
-            (int ra, int rb) = reversed[k];
-            if (k + 1 < reversed.Count)
+            int n = Math.Max(gapA.Count, gapB.Count);
+            for (int k = 0; k < n; k++)
             {
-                (int na, int nb) = reversed[k + 1];
-                if ((ra >= 0 && rb < 0 && na < 0 && nb >= 0) || (ra < 0 && rb >= 0 && na >= 0 && nb < 0))
-                {
-                    rows.Add((Math.Max(ra, na), Math.Max(rb, nb)));
-                    k++;
-                    continue;
-                }
+                rows.Add((k < gapA.Count ? gapA[k] : -1, k < gapB.Count ? gapB[k] : -1));
             }
 
-            rows.Add((ra, rb));
+            gapA.Clear();
+            gapB.Clear();
         }
 
+        foreach ((int ra, int rb) in reversed)
+        {
+            if (ra >= 0 && rb >= 0)
+            {
+                Flush();
+                rows.Add((ra, rb));
+            }
+            else if (ra >= 0)
+            {
+                gapA.Add(ra);
+            }
+            else
+            {
+                gapB.Add(rb);
+            }
+        }
+
+        Flush();
         return rows;
     }
 
