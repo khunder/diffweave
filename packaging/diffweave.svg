@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1E3A8A"/>
+      <stop offset="1" stop-color="#0F766E"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="52" fill="url(#bg)"/>
+  <!-- left pane -->
+  <rect x="40" y="52" width="64" height="152" rx="10" fill="#FFFFFF" fill-opacity="0.95"/>
+  <rect x="52" y="70" width="40" height="8" rx="4" fill="#94A3B8"/>
+  <rect x="52" y="90" width="30" height="8" rx="4" fill="#94A3B8"/>
+  <rect x="52" y="110" width="40" height="14" rx="4" fill="#F59E0B"/>
+  <rect x="52" y="136" width="34" height="8" rx="4" fill="#94A3B8"/>
+  <rect x="52" y="156" width="40" height="8" rx="4" fill="#94A3B8"/>
+  <!-- right pane -->
+  <rect x="152" y="52" width="64" height="152" rx="10" fill="#FFFFFF" fill-opacity="0.95"/>
+  <rect x="164" y="70" width="40" height="8" rx="4" fill="#94A3B8"/>
+  <rect x="164" y="90" width="30" height="8" rx="4" fill="#94A3B8"/>
+  <rect x="164" y="130" width="40" height="14" rx="4" fill="#22C55E"/>
+  <rect x="164" y="156" width="40" height="8" rx="4" fill="#94A3B8"/>
+  <!-- woven ribbons between the panes -->
+  <path d="M104 110 C128 110 128 130 152 130 L152 144 C128 144 128 124 104 124 Z" fill="#FDE68A"/>
+  <path d="M104 86 C130 86 126 170 152 170" stroke="#A78BFA" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M104 170 C130 170 126 86 152 86" stroke="#5EEAD4" stroke-width="7" fill="none" stroke-linecap="round"/>
+</svg>

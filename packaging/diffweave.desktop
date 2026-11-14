@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name=DiffWeave
+GenericName=Diff and Merge Tool
+Comment=Compare and merge files and directories
+Exec=diffweave %F
+Icon=diffweave
+Terminal=false
+Categories=Development;RevisionControl;
+MimeType=text/plain;inode/directory;
+Keywords=diff;merge;compare;git;mergetool;kdiff3;
+StartupWMClass=diffweave
