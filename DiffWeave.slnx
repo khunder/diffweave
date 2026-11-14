@@ -7,5 +7,10 @@
   <Folder Name="/tests/">
     <Project Path="tests/DiffWeave.Core.Tests/DiffWeave.Core.Tests.csproj" />
     <Project Path="tests/DiffWeave.App.Tests/DiffWeave.App.Tests.csproj" />
+    <Project Path="tests/DiffWeave.Core.Tests/TestPlugin/DiffWeave.Core.Tests.TestPlugin.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/DiffWeave.Samples.WhitespacePlugin/DiffWeave.Samples.WhitespacePlugin.csproj" />
+    <Project Path="samples/DiffWeave.Samples.WhitespacePlugin.Tests/DiffWeave.Samples.WhitespacePlugin.Tests.csproj" />
   </Folder>
 </Solution>
