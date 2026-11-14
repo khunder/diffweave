@@ -1,0 +1,98 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="using:DiffWeave.App.Documents"
+             x:Class="DiffWeave.App.Views.DirectoryView">
+  <UserControl.Styles>
+    <Style Selector="TextBlock.cell">
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+      <Setter Property="Margin" Value="6,0" />
+    </Style>
+    <Style Selector="TextBlock.num">
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="Foreground" Value="{DynamicResource DW.Subtle}" />
+      <Setter Property="FontFeatures" Value="+tnum" />
+    </Style>
+    <Style Selector="TextBlock.head">
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Foreground" Value="{DynamicResource DW.Pane.HeaderSubtle}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="6,0" />
+    </Style>
+    <Style Selector="ListBoxItem">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="MinHeight" Value="26" />
+    </Style>
+  </UserControl.Styles>
+  <Border BorderBrush="{DynamicResource DW.Pane.Border}" BorderThickness="1" Background="{DynamicResource DW.Panel.Background}">
+    <DockPanel>
+      <Border DockPanel.Dock="Top" Background="{DynamicResource DW.Pane.HeaderBackground}" BorderBrush="{DynamicResource DW.Pane.Border}"
+              BorderThickness="0,0,0,1" Padding="8,6">
+        <DockPanel>
+          <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6">
+            <Button x:Name="CopyRightButton" Content="Copy A → B" ToolTip.Tip="Copy the selected entry from A to B" />
+            <Button x:Name="CopyLeftButton" Content="Copy B → A" ToolTip.Tip="Copy the selected entry from B to A" />
+            <Button x:Name="RefreshButton" Content="Refresh" ToolTip.Tip="Compare again (F5)" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+            <TextBlock Text="Show:" VerticalAlignment="Center" Foreground="{DynamicResource DW.Subtle}" />
+            <CheckBox x:Name="ShowDifferent" Content="Different" IsChecked="True" />
+            <CheckBox x:Name="ShowOnly" Content="Only on one side" IsChecked="True" />
+            <CheckBox x:Name="ShowIdentical" Content="Identical" IsChecked="True" />
+            <Button x:Name="ExpandAllButton" Content="Expand all" Classes="link" />
+          </StackPanel>
+        </DockPanel>
+      </Border>
+      <StackPanel x:Name="RootsPanel" DockPanel.Dock="Top" Margin="10,6,10,2" Spacing="2" />
+      <Grid x:Name="HeaderGrid" DockPanel.Dock="Top" Height="28" Margin="0,4,0,0"
+            ColumnDefinitions="*,120,80,130,80,130,80,130">
+        <TextBlock Classes="head" Text="Name" Margin="34,0,6,0" />
+        <TextBlock Classes="head" Grid.Column="1" Text="Status" />
+        <TextBlock Classes="head" Grid.Column="2" Text="Size A" HorizontalAlignment="Right" />
+        <TextBlock Classes="head" Grid.Column="3" Text="Modified A" />
+        <TextBlock Classes="head" Grid.Column="4" Text="Size B" HorizontalAlignment="Right" />
+        <TextBlock Classes="head" Grid.Column="5" Text="Modified B" />
+        <TextBlock x:Name="HeadSizeC" Classes="head" Grid.Column="6" Text="Size C" HorizontalAlignment="Right" />
+        <TextBlock x:Name="HeadModC" Classes="head" Grid.Column="7" Text="Modified C" />
+      </Grid>
+      <Border DockPanel.Dock="Top" Height="1" Background="{DynamicResource DW.Pane.Border}" />
+      <Grid>
+        <ListBox x:Name="List" Background="Transparent" SelectionMode="Single"
+                 AutomationProperties.Name="Directory comparison">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="d:DirectoryRow">
+              <Grid ColumnDefinitions="*,120,80,130,80,130,80,130" Height="26" Background="Transparent">
+                <StackPanel Orientation="Horizontal" Margin="{Binding Indent, Converter={x:Static d:Converters.LeftMargin}}">
+                  <TextBlock Text="{Binding Expander}" Width="16" Margin="8,0,0,0" VerticalAlignment="Center"
+                             Foreground="{DynamicResource DW.Subtle}" />
+                  <PathIcon Width="14" Height="14" Margin="2,0,6,0" IsVisible="{Binding IsDirectory}"
+                            Foreground="{DynamicResource DW.Accent}"
+                            Data="M2 4.5A1.5 1.5 0 0 1 3.5 3h4l1.5 2h7.5A1.5 1.5 0 0 1 18 6.5v9A1.5 1.5 0 0 1 16.5 17h-13A1.5 1.5 0 0 1 2 15.5Z" />
+                  <PathIcon Width="13" Height="14" Margin="2,0,6,0" IsVisible="{Binding IsFile}"
+                            Foreground="{DynamicResource DW.Subtle}"
+                            Data="M4 2h8l4 4v12H4ZM11.5 2.5V6.5h4" />
+                  <TextBlock Classes="cell" Margin="0" Text="{Binding Name}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" Margin="6,0" VerticalAlignment="Center">
+                  <Ellipse Width="8" Height="8" Fill="{Binding StatusBrushKey, Converter={x:Static d:Converters.ResourceBrush}}" />
+                  <TextBlock Text="{Binding StatusText}" FontSize="12" VerticalAlignment="Center"
+                             Foreground="{Binding StatusBrushKey, Converter={x:Static d:Converters.ResourceBrush}}" />
+                </StackPanel>
+                <TextBlock Classes="cell num" Grid.Column="2" Text="{Binding SizeA}" />
+                <TextBlock Classes="cell num" Grid.Column="3" HorizontalAlignment="Left" Text="{Binding ModifiedA}" />
+                <TextBlock Classes="cell num" Grid.Column="4" Text="{Binding SizeB}" />
+                <TextBlock Classes="cell num" Grid.Column="5" HorizontalAlignment="Left" Text="{Binding ModifiedB}" />
+                <TextBlock Classes="cell num" Grid.Column="6" Text="{Binding SizeC}" IsVisible="{Binding HasC}" />
+                <TextBlock Classes="cell num" Grid.Column="7" HorizontalAlignment="Left" Text="{Binding ModifiedC}" IsVisible="{Binding HasC}" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+        <TextBlock x:Name="EmptyText" Text="Comparing…" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Foreground="{DynamicResource DW.Subtle}" />
+      </Grid>
+    </DockPanel>
+  </Border>
+</UserControl>

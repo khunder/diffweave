@@ -1,0 +1,120 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DiffWeave.App.ViewModels"
+             xmlns:c="using:DiffWeave.App.Controls"
+             x:Class="DiffWeave.App.Views.AssistantsPanel"
+             x:DataType="vm:AssistantsViewModel"
+             AutomationProperties.Name="Assistants">
+  <Border Background="{DynamicResource DW.Panel.Background}" BorderBrush="{DynamicResource DW.Pane.Border}" BorderThickness="1">
+    <DockPanel>
+      <Border DockPanel.Dock="Top" Background="{DynamicResource DW.Pane.HeaderBackground}" BorderBrush="{DynamicResource DW.Pane.Border}"
+              BorderThickness="0,0,0,1" Padding="12,8">
+        <DockPanel>
+          <Button x:Name="CloseButton" DockPanel.Dock="Right" Padding="6,2" ToolTip.Tip="Hide the assistants panel"
+                  AutomationProperties.Name="Close assistants panel">
+            <PathIcon Width="10" Height="10" Data="M1 1L9 9M9 1L1 9" />
+          </Button>
+          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <PathIcon Width="16" Height="16" Foreground="{DynamicResource DW.Accent}"
+                      Data="M10 1l2.2 5.3L18 7l-4.4 3.9L15 17l-5-3-5 3 1.4-6.1L2 7l5.8-.7Z" />
+            <TextBlock Text="Merge assistants" FontWeight="SemiBold" FontSize="13.5" VerticalAlignment="Center" />
+          </StackPanel>
+        </DockPanel>
+      </Border>
+
+      <!-- Empty state -->
+      <StackPanel x:Name="EmptyState" IsVisible="{Binding ShowEmptyState}" Margin="24,40" Spacing="12" HorizontalAlignment="Center">
+        <Border Width="56" Height="56" CornerRadius="28" Background="{DynamicResource DW.Card.Background}" HorizontalAlignment="Center"
+                BorderBrush="{DynamicResource DW.Card.Border}" BorderThickness="1">
+          <PathIcon Width="24" Height="24" Foreground="{DynamicResource DW.Subtle}"
+                    Data="M10 1l2.2 5.3L18 7l-4.4 3.9L15 17l-5-3-5 3 1.4-6.1L2 7l5.8-.7Z" />
+        </Border>
+        <TextBlock Text="No merge assistants installed" FontWeight="SemiBold" FontSize="14" HorizontalAlignment="Center" />
+        <TextBlock TextWrapping="Wrap" TextAlignment="Center" MaxWidth="280" Foreground="{DynamicResource DW.Subtle}" FontSize="12.5"
+                   Text="Assistants are plugins that propose resolutions for conflicts. Proposals are always previewed and only applied when you accept them." />
+        <Button x:Name="DocsButton" HorizontalAlignment="Center" Classes="link" Content="How to write a merge assistant plugin"
+                ToolTip.Tip="Opens docs/extensibility.md" />
+      </StackPanel>
+
+      <Grid IsVisible="{Binding HasAssistants}" RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="12,10,12,10">
+        <StackPanel Spacing="6">
+          <TextBlock Text="Assistant" FontSize="11.5" Foreground="{DynamicResource DW.Subtle}" />
+          <ComboBox x:Name="AssistantCombo" HorizontalAlignment="Stretch" ItemsSource="{Binding Assistants}"
+                    SelectedItem="{Binding SelectedAssistant}" AutomationProperties.Name="Assistant">
+            <ComboBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:AssistantItem">
+                <TextBlock Text="{Binding Name}" />
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+          <TextBlock Text="{Binding SelectedAssistant.Description, FallbackValue=''}" TextWrapping="Wrap" FontSize="12"
+                     Foreground="{DynamicResource DW.Subtle}" />
+          <TextBlock Text="{Binding SelectedAssistant.CapabilitiesText, FallbackValue=''}" FontSize="11"
+                     Foreground="{DynamicResource DW.Subtle}" FontStyle="Italic" />
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,10,0,4">
+          <Button x:Name="RunCurrentButton" Classes="accent" Content="Run on current conflict" Command="{Binding RunForCurrentCommand}" />
+          <Button x:Name="RunAllButton" Content="All unresolved" Command="{Binding RunForAllCommand}" />
+        </StackPanel>
+        <TextBlock Grid.Row="2" Text="{Binding StatusText}" FontSize="11.5" Foreground="{DynamicResource DW.Subtle}" Margin="0,2,0,8"
+                   TextWrapping="Wrap" />
+        <Grid Grid.Row="3" RowDefinitions="*,Auto,Auto">
+          <ListBox x:Name="ProposalList" ItemsSource="{Binding Proposals}" SelectedItem="{Binding SelectedProposal}"
+                   Background="Transparent" AutomationProperties.Name="Proposals">
+            <ListBox.Styles>
+              <Style Selector="ListBoxItem">
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Margin" Value="0,0,0,8" />
+              </Style>
+            </ListBox.Styles>
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:ProposalItem">
+                <Border Background="{DynamicResource DW.Card.Background}" BorderBrush="{DynamicResource DW.Card.Border}"
+                        BorderThickness="1" CornerRadius="6" Padding="10,8">
+                  <StackPanel Spacing="6">
+                    <DockPanel>
+                      <TextBlock DockPanel.Dock="Right" Text="{Binding StateText}" FontSize="11" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource DW.Accent}" />
+                      <TextBlock Text="{Binding RegionLabel}" FontWeight="SemiBold" FontSize="12.5" />
+                    </DockPanel>
+                    <TextBlock Text="{Binding Rationale}" TextWrapping="Wrap" FontSize="12" />
+                    <DockPanel>
+                      <TextBlock DockPanel.Dock="Right" Text="{Binding ConfidenceText}" FontSize="11" Margin="8,0,0,0"
+                                 Foreground="{DynamicResource DW.Subtle}" />
+                      <TextBlock DockPanel.Dock="Left" Text="Confidence" FontSize="11" Margin="0,0,8,0" Foreground="{DynamicResource DW.Subtle}" />
+                      <ProgressBar Minimum="0" Maximum="1" Value="{Binding Confidence}" Height="4" MinHeight="4" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource DW.Confidence.Fill}" Background="{DynamicResource DW.Confidence.Track}" />
+                    </DockPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding IsPending}">
+                      <Button Content="Accept" Classes="accent" Padding="10,3"
+                              Command="{Binding $parent[UserControl].((vm:AssistantsViewModel)DataContext).AcceptCommand}"
+                              CommandParameter="{Binding}" />
+                      <Button Content="Reject" Padding="10,3"
+                              Command="{Binding $parent[UserControl].((vm:AssistantsViewModel)DataContext).RejectCommand}"
+                              CommandParameter="{Binding}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <StackPanel Grid.Row="1" Spacing="4" IsVisible="{Binding HasProposals}" Margin="0,4,0,0">
+            <TextBlock Text="Preview (current output → proposal)" FontSize="11.5" Foreground="{DynamicResource DW.Subtle}" />
+            <Border BorderBrush="{DynamicResource DW.Pane.Border}" BorderThickness="1" Height="150">
+              <c:DiffTextView x:Name="PreviewView" ShowLineNumbers="False" AutomationProperties.Name="Proposal preview" />
+            </Border>
+          </StackPanel>
+          <ItemsControl Grid.Row="2" ItemsSource="{Binding Diagnostics}" Margin="0,6,0,0">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <TextBlock Text="{Binding}" FontSize="11.5" TextWrapping="Wrap" Foreground="{DynamicResource DW.Subtle}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Grid>
+        <Button Grid.Row="4" x:Name="AcceptAllButton" Content="Accept all pending" Command="{Binding AcceptAllCommand}"
+                IsVisible="{Binding HasProposals}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,8,0,0" />
+      </Grid>
+    </DockPanel>
+  </Border>
+</UserControl>

@@ -90,8 +90,8 @@ public sealed class DiffBand : Control
         }
 
         double h = Bounds.Height;
-        double offset = _left.Bounds.Top - Bounds.Top;
-        double rOffset = _right.Bounds.Top - Bounds.Top;
+        double offset = _left.TranslatePoint(default, this)?.Y ?? 0;
+        double rOffset = _right.TranslatePoint(default, this)?.Y ?? 0;
         foreach (DiffBlock b in Mapping.Blocks)
         {
             (double lt, double lb) = _left.GetSpanBounds(b.Spans[LeftPane]);
