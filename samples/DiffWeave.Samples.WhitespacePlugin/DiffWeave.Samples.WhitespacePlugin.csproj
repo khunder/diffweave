@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Sample plugin: a deterministic whitespace-normalizing merge assistant, a command and a decoration provider. -->
+  <PropertyGroup>
+    <RootNamespace>DiffWeave.Samples.WhitespacePlugin</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Produce a deps.json so the host's AssemblyDependencyResolver can resolve private dependencies. -->
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- The host provides DiffWeave.Extensibility at run time: do not copy it next to the plugin. -->
+    <ProjectReference Include="..\..\src\DiffWeave.Extensibility\DiffWeave.Extensibility.csproj">
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="plugin.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

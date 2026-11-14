@@ -4,6 +4,11 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
+    <!-- The test plugin is a separate project, loaded from disk at run time. -->
+    <Compile Remove="TestPlugin/**" />
+    <None Remove="TestPlugin/**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
@@ -12,5 +17,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\DiffWeave.Core\DiffWeave.Core.csproj" />
     <ProjectReference Include="..\..\src\DiffWeave.Extensibility\DiffWeave.Extensibility.csproj" />
+    <!-- Build order only: the plugin assemblies must not be loaded into the default context. -->
+    <ProjectReference Include="TestPlugin\DiffWeave.Core.Tests.TestPlugin.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\samples\DiffWeave.Samples.WhitespacePlugin\DiffWeave.Samples.WhitespacePlugin.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

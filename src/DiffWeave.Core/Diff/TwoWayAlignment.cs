@@ -36,5 +36,72 @@ public sealed class TwoWayAlignment : LineAlignment
     /// options, and for rows of ignorable hunks.
     /// </summary>
     public static TwoWayAlignment Create(IReadOnlyList<string> a, IReadOnlyList<string> b, DiffOptions? options = null, CancellationToken cancellationToken = default)
-        => throw new NotImplementedException();
+    {
+        options ??= DiffOptions.Default;
+        DiffResult diff = LineDiffer.Diff(a, b, options, cancellationToken);
+        return FromDiff(a, b, diff, options);
+    }
+
+    /// <summary>Builds the alignment from an existing diff of <paramref name="a"/> and <paramref name="b"/>.</summary>
+    public static TwoWayAlignment FromDiff(IReadOnlyList<string> a, IReadOnlyList<string> b, DiffResult diff, DiffOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(diff);
+        options ??= DiffOptions.Default;
+        int capacity = a.Count + diff.Hunks.Sum(h => Math.Max(0, h.CountB - h.CountA));
+        var colA = new List<int>(capacity);
+        var colB = new List<int>(capacity);
+        var kinds = new List<RowKind>(capacity);
+        bool normalizes = options.NormalizesLines;
+
+        void Equal(int i, int j)
+        {
+            colA.Add(i);
+            colB.Add(j);
+            kinds.Add(normalizes && a[i] != b[j] ? RowKind.WhitespaceOnly : RowKind.Equal);
+        }
+
+        int ia = 0, ib = 0;
+        foreach (DiffHunk h in diff.Hunks)
+        {
+            while (ia < h.StartA)
+            {
+                Equal(ia++, ib++);
+            }
+
+            foreach ((int ra, int rb) in LinePairing.Pair(a, h.StartA, h.CountA, b, h.StartB, h.CountB))
+            {
+                colA.Add(ra);
+                colB.Add(rb);
+                RowKind kind;
+                if (h.IsIgnorable)
+                {
+                    kind = RowKind.WhitespaceOnly;
+                }
+                else if (ra >= 0 && rb >= 0)
+                {
+                    kind = LineDiffer.EqualIgnoringWhitespace(a[ra], b[rb]) ? RowKind.WhitespaceOnly : RowKind.Changed;
+                }
+                else if (ra >= 0)
+                {
+                    kind = LineDiffer.IsBlank(a[ra]) ? RowKind.WhitespaceOnly : RowKind.Removed;
+                }
+                else
+                {
+                    kind = LineDiffer.IsBlank(b[rb]) ? RowKind.WhitespaceOnly : RowKind.Added;
+                }
+
+                kinds.Add(kind);
+            }
+
+            ia = h.EndA;
+            ib = h.EndB;
+        }
+
+        while (ia < a.Count)
+        {
+            Equal(ia++, ib++);
+        }
+
+        return new TwoWayAlignment([[.. colA], [.. colB]], [.. kinds], diff, a, b);
+    }
 }

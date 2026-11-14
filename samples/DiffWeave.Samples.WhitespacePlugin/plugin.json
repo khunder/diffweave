@@ -1,0 +1,10 @@
+{
+  "id": "diffweave.samples.whitespace",
+  "name": "Whitespace normalizer (sample)",
+  "version": "1.0.0",
+  "apiVersion": "[1.0,2.0)",
+  "entryAssembly": "DiffWeave.Samples.WhitespacePlugin.dll",
+  "entryType": "DiffWeave.Samples.WhitespacePlugin.WhitespacePlugin",
+  "description": "Proposes resolutions for conflicts whose sides differ only in whitespace, and marks trailing whitespace.",
+  "authors": [ "DiffWeave contributors" ]
+}

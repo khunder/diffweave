@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Plugins used by the plugin loading tests (good, throwing, ...). Loaded from a temporary folder, never referenced. -->
+  <PropertyGroup>
+    <RootNamespace>DiffWeave.Core.Tests.TestPlugin</RootNamespace>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\DiffWeave.Extensibility\DiffWeave.Extensibility.csproj">
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

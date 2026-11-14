@@ -499,7 +499,7 @@ public sealed class PluginManager : IDisposable
             _manager = manager;
             Plugin = info;
             Logger = manager.Log.CreateLogger(info.Id);
-            Settings = manager.Settings.GetSection("plugins").GetSection(info.Id);
+            Settings = new TrackingSettings(this, manager.Settings.GetSection("plugins").GetSection(info.Id));
             Commands = new TrackingCommands(this, manager.Commands);
             MergeAssistants = new TrackingAssistants(this, manager.MergeAssistants);
             EditorExtensions = new TrackingEditor(this, manager.EditorExtensions);
@@ -648,6 +648,40 @@ public sealed class PluginManager : IDisposable
         public Task RunAfterResolveAsync(MergeLifecycleContext context, CancellationToken cancellationToken = default) => inner.RunAfterResolveAsync(context, cancellationToken);
 
         public Task<HookResult> RunBeforeSaveAsync(MergeLifecycleContext context, CancellationToken cancellationToken = default) => inner.RunBeforeSaveAsync(context, cancellationToken);
+    }
+
+    /// <summary>Settings view whose event subscriptions are removed when the plugin unloads (so they cannot keep it alive).</summary>
+    private sealed class TrackingSettings(PluginHost host, ISettingsStore inner) : ISettingsStore
+    {
+        public string Namespace => inner.Namespace;
+
+        public IReadOnlyCollection<string> Keys => inner.Keys;
+
+        public event EventHandler<string>? Changed
+        {
+            add
+            {
+                if (value is null)
+                {
+                    return;
+                }
+
+                inner.Changed += value;
+                host.Track(new Registration(() => inner.Changed -= value));
+            }
+
+            remove => inner.Changed -= value;
+        }
+
+        public T Get<T>(string key, T defaultValue) => inner.Get(key, defaultValue);
+
+        public bool TryGet<T>(string key, out T? value) => inner.TryGet(key, out value);
+
+        public void Set<T>(string key, T value) => inner.Set(key, value);
+
+        public bool Remove(string key) => inner.Remove(key);
+
+        public ISettingsStore GetSection(string name) => new TrackingSettings(host, inner.GetSection(name));
     }
 
     private sealed class TrackingFileTypes(PluginHost host, FileTypeService inner) : IFileTypeService

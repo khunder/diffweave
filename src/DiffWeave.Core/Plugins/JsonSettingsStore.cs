@@ -137,7 +137,7 @@ public sealed class JsonSettingsStore : ISettingsStore
 
         try
         {
-            value = node is null ? default : node.Deserialize<T>(s_json);
+            value = node is null ? default : node.Deserialize<T>(OptionsFor(typeof(T)));
             return node is null ? default(T) is null : true;
         }
         catch (Exception ex) when (ex is JsonException or NotSupportedException or InvalidOperationException or FormatException)
@@ -151,7 +151,7 @@ public sealed class JsonSettingsStore : ISettingsStore
     public void Set<T>(string key, T value)
     {
         ValidateKey(key);
-        JsonNode? node = JsonSerializer.SerializeToNode(value, s_json);
+        JsonNode? node = JsonSerializer.SerializeToNode(value, OptionsFor(typeof(T)));
         lock (_root.Gate)
         {
             _root.Values[_prefix + key] = node;
@@ -184,6 +184,12 @@ public sealed class JsonSettingsStore : ISettingsStore
         ValidateKey(name);
         return new JsonSettingsStore(_root, _prefix + name);
     }
+
+    // Types from collectible (plugin) assemblies must not be cached in the shared options, or the plugin could never unload.
+    private static JsonSerializerOptions OptionsFor(Type type)
+        => type.Assembly.IsCollectible || (type.IsGenericType && type.GetGenericArguments().Any(a => a.Assembly.IsCollectible))
+            ? new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            : s_json;
 
     private void Raise(string key)
     {
