@@ -209,10 +209,11 @@ public sealed class MergeDocument : DiffDocument
             region = CurrentRegion;
         }
 
-        MergeLifecycleContext? ctx = LifecycleHooks is null ? null : new MergeLifecycleContext(CreateSnapshot(), region, choice.ToString());
-        if (LifecycleHooks is not null)
+        IMergeLifecycleHookRegistry? hooks = LifecycleHooks is { Hooks.Count: > 0 } h ? h : null;
+        MergeLifecycleContext? ctx = hooks is null ? null : new MergeLifecycleContext(CreateSnapshot(), region, choice.ToString());
+        if (hooks is not null)
         {
-            HookResult r = await LifecycleHooks.RunBeforeResolveAsync(ctx!).ConfigureAwait(true);
+            HookResult r = await hooks.RunBeforeResolveAsync(ctx!).ConfigureAwait(true);
             if (!r.Proceed)
             {
                 ShowMessage(r.Message ?? "A plugin cancelled the resolution.", MessageSeverity.Warning);
@@ -230,9 +231,9 @@ public sealed class MergeDocument : DiffDocument
         }
 
         SelectRegion(region);
-        if (LifecycleHooks is not null)
+        if (hooks is not null)
         {
-            await LifecycleHooks.RunAfterResolveAsync(new MergeLifecycleContext(CreateSnapshot(), region, choice.ToString())).ConfigureAwait(true);
+            await hooks.RunAfterResolveAsync(new MergeLifecycleContext(CreateSnapshot(), region, choice.ToString())).ConfigureAwait(true);
         }
 
         return true;
@@ -273,9 +274,9 @@ public sealed class MergeDocument : DiffDocument
     public async Task<bool> SaveAsync(string? path = null)
     {
         path ??= OutputPath ?? throw new InvalidOperationException("No output path.");
-        if (LifecycleHooks is not null)
+        if (LifecycleHooks is { Hooks.Count: > 0 } saveHooks)
         {
-            HookResult r = await LifecycleHooks.RunBeforeSaveAsync(new MergeLifecycleContext(CreateSnapshot())).ConfigureAwait(true);
+            HookResult r = await saveHooks.RunBeforeSaveAsync(new MergeLifecycleContext(CreateSnapshot())).ConfigureAwait(true);
             if (!r.Proceed)
             {
                 ShowMessage(r.Message ?? "A plugin prevented saving.", MessageSeverity.Warning);

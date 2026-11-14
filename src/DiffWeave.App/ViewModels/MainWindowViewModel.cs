@@ -144,6 +144,9 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDocumentHos
     /// <summary>The merge opened from the command line (decides the exit code).</summary>
     public MergeDocument? StartedAsMerge { get; private set; }
 
+    /// <summary>Makes <paramref name="merge"/> decide the process exit code (as if opened from the command line).</summary>
+    public void TrackExitCodeOf(MergeDocument merge) => StartedAsMerge = merge;
+
     /// <summary>Connects the window.</summary>
     public void Attach(IMainView view) => _view = view;
 

@@ -62,9 +62,9 @@
     <KeyBinding Gesture="Ctrl+End" Command="{Binding LastDifferenceCommand}" />
     <KeyBinding Gesture="Ctrl+PageUp" Command="{Binding PreviousConflictCommand}" />
     <KeyBinding Gesture="Ctrl+PageDown" Command="{Binding NextConflictCommand}" />
-    <KeyBinding Gesture="Ctrl+1" Command="{Binding ChooseACommand}" />
-    <KeyBinding Gesture="Ctrl+2" Command="{Binding ChooseBCommand}" />
-    <KeyBinding Gesture="Ctrl+3" Command="{Binding ChooseCCommand}" />
+    <KeyBinding Gesture="Ctrl+D1" Command="{Binding ChooseACommand}" />
+    <KeyBinding Gesture="Ctrl+D2" Command="{Binding ChooseBCommand}" />
+    <KeyBinding Gesture="Ctrl+D3" Command="{Binding ChooseCCommand}" />
     <KeyBinding Gesture="Ctrl+Shift+M" Command="{Binding AutoMergeAllCommand}" />
     <KeyBinding Gesture="Ctrl+OemPlus" Command="{Binding ZoomFontCommand}" CommandParameter="+" />
     <KeyBinding Gesture="Ctrl+OemMinus" Command="{Binding ZoomFontCommand}" CommandParameter="-" />
@@ -120,9 +120,9 @@
         <MenuItem Header="_Previous Unresolved Conflict" InputGesture="Ctrl+PageUp" Command="{Binding PreviousConflictCommand}" />
         <MenuItem Header="_Next Unresolved Conflict" InputGesture="Ctrl+PageDown" Command="{Binding NextConflictCommand}" />
         <Separator />
-        <MenuItem Header="Choose _A (base)" InputGesture="Ctrl+1" Command="{Binding ChooseACommand}" />
-        <MenuItem Header="Choose _B (local)" InputGesture="Ctrl+2" Command="{Binding ChooseBCommand}" />
-        <MenuItem Header="Choose _C (remote)" InputGesture="Ctrl+3" Command="{Binding ChooseCCommand}" />
+        <MenuItem Header="Choose _A (base)" InputGesture="Ctrl+D1" Command="{Binding ChooseACommand}" />
+        <MenuItem Header="Choose _B (local)" InputGesture="Ctrl+D2" Command="{Binding ChooseBCommand}" />
+        <MenuItem Header="Choose _C (remote)" InputGesture="Ctrl+D3" Command="{Binding ChooseCCommand}" />
         <MenuItem Header="Choose B then C" Command="{Binding ChooseBThenCCommand}" />
         <MenuItem Header="Choose C then B" Command="{Binding ChooseCThenBCommand}" />
         <MenuItem Header="_Unresolve" Command="{Binding UnresolveCommand}" />
