@@ -41,7 +41,8 @@ dotnet test DiffWeave.slnx                  # Core, App (headless UI) and sample
 dotnet run --project src/DiffWeave.App -- a.txt b.txt
 ```
 
-The executable is `artifacts/bin/DiffWeave.App/debug/diffweave`. For a self-contained build:
+The executable is `artifacts/bin/DiffWeave.App/debug/diffweave` (when the SDK is installed in a private folder such as
+`~/.dotnet`, set `DOTNET_ROOT=$HOME/.dotnet` to run it directly). For a self-contained build:
 
 ```sh
 dotnet publish src/DiffWeave.App -c Release -r linux-x64 --self-contained -o out/diffweave
