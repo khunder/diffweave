@@ -71,7 +71,13 @@ public abstract class DiffDocument : IEditorContext
     public DiffBlock? Current => Mapping is { } m && _currentBlock >= 0 && _currentBlock < m.Blocks.Count ? m.Blocks[_currentBlock] : null;
 
     /// <summary>Number of difference blocks (excluding whitespace-only ones when ignored).</summary>
-    public int DifferenceCount => Mapping?.Blocks.Count ?? 0;
+    public int DifferenceCount => Mapping?.Blocks.Count(IsNavigable) ?? 0;
+
+    /// <summary>Ordinal (1-based) of the current block among navigable blocks, or 0.</summary>
+    public int CurrentOrdinal => Current is { } c && IsNavigable(c) ? Mapping!.Blocks.Take(c.Index + 1).Count(IsNavigable) : 0;
+
+    /// <summary>True for blocks that count as differences (not hidden by ignore options).</summary>
+    public static bool IsNavigable(DiffBlock b) => b.Kind != HighlightKind.None || b.IsConflict;
 
     /// <summary>The window title fragment.</summary>
     public virtual string Title => string.Join(" ↔ ", Inputs.Select(i => i.Label));
@@ -92,7 +98,7 @@ public abstract class DiffDocument : IEditorContext
 
         for (int i = _currentBlock + 1; i < Mapping.Blocks.Count; i++)
         {
-            if (filter is null || filter(Mapping.Blocks[i]))
+            if (IsNavigable(Mapping.Blocks[i]) && (filter is null || filter(Mapping.Blocks[i])))
             {
                 CurrentBlock = i;
                 return true;
@@ -113,7 +119,7 @@ public abstract class DiffDocument : IEditorContext
         int start = _currentBlock < 0 ? Mapping.Blocks.Count - 1 : _currentBlock - 1;
         for (int i = start; i >= 0; i--)
         {
-            if (filter is null || filter(Mapping.Blocks[i]))
+            if (IsNavigable(Mapping.Blocks[i]) && (filter is null || filter(Mapping.Blocks[i])))
             {
                 CurrentBlock = i;
                 return true;

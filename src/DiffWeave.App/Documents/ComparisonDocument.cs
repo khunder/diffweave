@@ -41,7 +41,7 @@ public sealed class ComparisonDocument : DiffDocument
     public override EditorKind Kind => Inputs.Count == 2 ? EditorKind.TwoWayDiff : EditorKind.ThreeWayDiff;
 
     /// <summary>True when the files are equal under the current options.</summary>
-    public bool AreEqual => Mapping is { } m && m.Blocks.All(b => b.IsWhitespaceOnly && Options.Whitespace != WhitespaceMode.None);
+    public bool AreEqual => DifferenceCount == 0;
 
     private int? Partner(int row, int pane)
     {
@@ -71,11 +71,11 @@ public sealed class ComparisonDocument : DiffDocument
                 if (lines.Length == 2)
                 {
                     TwoWayAlignment a = TwoWayAlignment.Create(lines[0], lines[1], options, cancellationToken);
-                    return new PaneMapping(a, (g, _) => ClassifyTwoWay(a, g));
+                    return new PaneMapping(a, (g, _) => Ignored(g, options) ? (HighlightKind.None, [HighlightKind.None, HighlightKind.None]) : ClassifyTwoWay(a, g));
                 }
 
                 ThreeWayAlignment t = ThreeWayAlignment.Create(lines[0], lines[1], lines[2], options, cancellationToken);
-                return new PaneMapping(t, (g, _) => ClassifyThreeWay(t, g));
+                return new PaneMapping(t, (g, _) => Ignored(g, options) ? (HighlightKind.None, [HighlightKind.None, HighlightKind.None, HighlightKind.None]) : ClassifyThreeWay(t, g));
             },
             cancellationToken).ConfigureAwait(true);
         Mapping = mapping;
@@ -87,6 +87,9 @@ public sealed class ComparisonDocument : DiffDocument
         OnMappingChanged();
         OnStateChanged();
     }
+
+    private static bool Ignored(DifferenceGroup g, DiffOptions o)
+        => g.IsWhitespaceOnly && (o.NormalizesLines || o.IgnoreBlankLines);
 
     private static (HighlightKind, IReadOnlyList<HighlightKind>?) ClassifyTwoWay(TwoWayAlignment a, DifferenceGroup g)
     {

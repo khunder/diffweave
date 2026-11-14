@@ -97,7 +97,6 @@ public sealed class BackgroundLayer : IEditorLayer
             if (row.Phantom is { } phantom)
             {
                 context.FillRectangle(frame.Palette.LineBrush(phantom.Kind), r);
-                context.FillRectangle(frame.Palette.MarkBrush(phantom.Kind), new Rect(left, row.Top + (frame.RowHeight / 2) - 0.5, width, 1));
                 continue;
             }
 
@@ -121,10 +120,9 @@ public sealed class BackgroundLayer : IEditorLayer
         LineSpan? region = frame.View.CurrentRegion;
         if (region is { } span)
         {
-            double top = frame.View.GetLineTop(span.Start);
-            double bottom = span.Count == 0 ? top : frame.View.GetLineTop(span.Start + span.Count);
+            (double top, double bottom) = frame.View.GetSpanBounds(span);
             Pen pen = new(frame.Palette.CurrentRegion, 1.5);
-            if (span.Count == 0)
+            if (bottom - top < 1)
             {
                 context.DrawLine(new Pen(frame.Palette.CurrentRegion, 3), new Point(left, top), new Point(left + width, top));
             }

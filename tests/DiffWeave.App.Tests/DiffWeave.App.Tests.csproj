@@ -15,5 +15,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\DiffWeave.App\DiffWeave.App.csproj" />
     <ProjectReference Include="..\..\src\DiffWeave.Core\DiffWeave.Core.csproj" />
+    <!-- Build order only: the sample plugin is copied into a temp plugin folder and loaded like a real plugin. -->
+    <ProjectReference Include="..\..\samples\DiffWeave.Samples.WhitespacePlugin\DiffWeave.Samples.WhitespacePlugin.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Private>false</Private>
+    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -174,6 +174,16 @@ public sealed class DiffDocumentView : Grid
         SetRowSpan(_ruler, RowDefinitions.Count);
         Children.Add(_ruler);
         ActivePane = OutputPane ?? _panes[0];
+        _reference.View.SizeChanged += OnFirstLayout;
+    }
+
+    private void OnFirstLayout(object? sender, SizeChangedEventArgs e)
+    {
+        if (e.NewSize.Height > 0 && _reference is not null)
+        {
+            _reference.View.SizeChanged -= OnFirstLayout;
+            OnCurrentBlockChanged(true);
+        }
     }
 
     private const double HeaderOffset = 0;

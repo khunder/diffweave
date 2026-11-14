@@ -110,7 +110,7 @@ public sealed class DiffBand : Control
                 continue;
             }
 
-            if (b.Spans[LeftPane].Count == 0 && b.Spans[RightPane].Count == 0)
+            if ((b.Spans[LeftPane].Count == 0 && b.Spans[RightPane].Count == 0) || (b.Kind == HighlightKind.None && !b.IsConflict))
             {
                 continue;
             }
@@ -124,6 +124,17 @@ public sealed class DiffBand : Control
     {
         double w = Bounds.Width;
         context.FillRectangle(_palette.Get("DW.Band.Background"), new Rect(Bounds.Size));
+        double clipTop = 0, clipBottom = Bounds.Height;
+        if (_left is not null && _right is not null)
+        {
+            double lt = _left.TranslatePoint(default, this)?.Y ?? 0;
+            double rt = _right.TranslatePoint(default, this)?.Y ?? 0;
+            clipTop = Math.Max(lt, rt);
+            clipBottom = Math.Min(lt + _left.Bounds.Height, rt + _right.Bounds.Height);
+            context.FillRectangle(_palette.Get("DW.Pane.Border"), new Rect(0, clipTop - 1, w, 1));
+        }
+
+        using DrawingContext.PushedState clip = context.PushClip(new Rect(0, clipTop, w, Math.Max(0, clipBottom - clipTop)));
         foreach ((DiffBlock b, double lt, double lb, double rt, double rb) in VisibleBlocks())
         {
             HighlightKind kind = KindSelector?.Invoke(b) ?? b.Kind;

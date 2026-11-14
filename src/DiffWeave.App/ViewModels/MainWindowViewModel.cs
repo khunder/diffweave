@@ -148,19 +148,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDocumentHos
     public void Attach(IMainView view) => _view = view;
 
     /// <summary>The current diff options from settings.</summary>
-    public DiffOptions CurrentDiffOptions => new()
-    {
-        Algorithm = DiffAlgorithm.Histogram,
-        Whitespace = Settings.Whitespace switch
-        {
-            WhitespaceSetting.IgnoreTrailing => WhitespaceMode.IgnoreTrailing,
-            WhitespaceSetting.IgnoreChanges => WhitespaceMode.IgnoreAmount,
-            WhitespaceSetting.IgnoreAll => WhitespaceMode.IgnoreAll,
-            _ => WhitespaceMode.None,
-        },
-        IgnoreCase = Settings.IgnoreCase,
-        IgnoreBlankLines = Settings.IgnoreBlankLines,
-    };
+    public DiffOptions CurrentDiffOptions => NonInteractive.OptionsFrom(Settings);
 
     // ---------------------------------------------------------------- opening
 
@@ -432,7 +420,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDocumentHos
         }
 
         int count = doc.DifferenceCount;
-        DifferenceStatus = count == 0 ? "No differences" : doc.CurrentBlock >= 0 ? $"Difference {doc.CurrentBlock + 1} of {count}" : $"{count} difference{(count == 1 ? string.Empty : "s")}";
+        DifferenceStatus = count == 0 ? "No differences" : doc.CurrentOrdinal > 0 ? $"Difference {doc.CurrentOrdinal} of {count}" : $"{count} difference{(count == 1 ? string.Empty : "s")}";
         ConflictStatus = doc is MergeDocument m ? $"{m.ConflictCount} conflict{(m.ConflictCount == 1 ? string.Empty : "s")}, {m.UnresolvedCount} unresolved" : string.Empty;
         NotifyCommands();
     }

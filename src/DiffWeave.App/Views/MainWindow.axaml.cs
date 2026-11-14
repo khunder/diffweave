@@ -164,6 +164,13 @@ public partial class MainWindow : Window, IMainView
     /// <inheritdoc />
     public void CloseWindow() => Close();
 
+    /// <summary>Closes without the unsaved-changes guard.</summary>
+    public void ForceClose()
+    {
+        _closeConfirmed = true;
+        Close();
+    }
+
     /// <inheritdoc />
     public void ShowFindBar()
     {
