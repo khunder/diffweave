@@ -1,0 +1,64 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- Diff palette. Keys: DW.Kind.{Kind}.Line|Inline|Mark and DW.* chrome brushes. -->
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Light">
+      <SolidColorBrush x:Key="DW.Kind.Inserted.Line" Color="#E3F0F9" />
+      <SolidColorBrush x:Key="DW.Kind.Inserted.Inline" Color="#A9D2EE" />
+      <SolidColorBrush x:Key="DW.Kind.Inserted.Mark" Color="#0072B2" />
+      <SolidColorBrush x:Key="DW.Kind.Deleted.Line" Color="#FBEADF" />
+      <SolidColorBrush x:Key="DW.Kind.Deleted.Inline" Color="#F3C29E" />
+      <SolidColorBrush x:Key="DW.Kind.Deleted.Mark" Color="#D55E00" />
+      <SolidColorBrush x:Key="DW.Kind.Changed.Line" Color="#FDF6D8" />
+      <SolidColorBrush x:Key="DW.Kind.Changed.Inline" Color="#F2DE8C" />
+      <SolidColorBrush x:Key="DW.Kind.Changed.Mark" Color="#8C6D00" />
+      <SolidColorBrush x:Key="DW.Kind.SourceA.Line" Color="#F0F0F0" />
+      <SolidColorBrush x:Key="DW.Kind.SourceA.Inline" Color="#D6D6D6" />
+      <SolidColorBrush x:Key="DW.Kind.SourceA.Mark" Color="#666666" />
+      <SolidColorBrush x:Key="DW.Kind.SourceB.Line" Color="#E3F0F9" />
+      <SolidColorBrush x:Key="DW.Kind.SourceB.Inline" Color="#A9D2EE" />
+      <SolidColorBrush x:Key="DW.Kind.SourceB.Mark" Color="#0072B2" />
+      <SolidColorBrush x:Key="DW.Kind.SourceC.Line" Color="#FAE8F1" />
+      <SolidColorBrush x:Key="DW.Kind.SourceC.Inline" Color="#EDBAD5" />
+      <SolidColorBrush x:Key="DW.Kind.SourceC.Mark" Color="#B0558A" />
+      <SolidColorBrush x:Key="DW.Kind.Conflict.Line" Color="#FBE6D8" />
+      <SolidColorBrush x:Key="DW.Kind.Conflict.Inline" Color="#F2B790" />
+      <SolidColorBrush x:Key="DW.Kind.Conflict.Mark" Color="#D55E00" />
+      <SolidColorBrush x:Key="DW.Kind.Resolved.Line" Color="#E5F3F7" />
+      <SolidColorBrush x:Key="DW.Kind.Resolved.Inline" Color="#BFE2EE" />
+      <SolidColorBrush x:Key="DW.Kind.Resolved.Mark" Color="#3F8FB0" />
+      <SolidColorBrush x:Key="DW.Kind.Error.Line" Color="#FBE6D8" />
+      <SolidColorBrush x:Key="DW.Kind.Error.Inline" Color="#F2B790" />
+      <SolidColorBrush x:Key="DW.Kind.Error.Mark" Color="#D55E00" />
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="Dark">
+      <SolidColorBrush x:Key="DW.Kind.Inserted.Line" Color="#132A3B" />
+      <SolidColorBrush x:Key="DW.Kind.Inserted.Inline" Color="#1F4C6B" />
+      <SolidColorBrush x:Key="DW.Kind.Inserted.Mark" Color="#56B4E9" />
+      <SolidColorBrush x:Key="DW.Kind.Deleted.Line" Color="#3A2412" />
+      <SolidColorBrush x:Key="DW.Kind.Deleted.Inline" Color="#6B3F18" />
+      <SolidColorBrush x:Key="DW.Kind.Deleted.Mark" Color="#E69F00" />
+      <SolidColorBrush x:Key="DW.Kind.Changed.Line" Color="#332E12" />
+      <SolidColorBrush x:Key="DW.Kind.Changed.Inline" Color="#5C521C" />
+      <SolidColorBrush x:Key="DW.Kind.Changed.Mark" Color="#F0E442" />
+      <SolidColorBrush x:Key="DW.Kind.SourceA.Line" Color="#26282B" />
+      <SolidColorBrush x:Key="DW.Kind.SourceA.Inline" Color="#3D4045" />
+      <SolidColorBrush x:Key="DW.Kind.SourceA.Mark" Color="#9DA3AA" />
+      <SolidColorBrush x:Key="DW.Kind.SourceB.Line" Color="#132A3B" />
+      <SolidColorBrush x:Key="DW.Kind.SourceB.Inline" Color="#1F4C6B" />
+      <SolidColorBrush x:Key="DW.Kind.SourceB.Mark" Color="#56B4E9" />
+      <SolidColorBrush x:Key="DW.Kind.SourceC.Line" Color="#36202D" />
+      <SolidColorBrush x:Key="DW.Kind.SourceC.Inline" Color="#5E3550" />
+      <SolidColorBrush x:Key="DW.Kind.SourceC.Mark" Color="#CC79A7" />
+      <SolidColorBrush x:Key="DW.Kind.Conflict.Line" Color="#3A2412" />
+      <SolidColorBrush x:Key="DW.Kind.Conflict.Inline" Color="#6B3F18" />
+      <SolidColorBrush x:Key="DW.Kind.Conflict.Mark" Color="#E69F00" />
+      <SolidColorBrush x:Key="DW.Kind.Resolved.Line" Color="#14302E" />
+      <SolidColorBrush x:Key="DW.Kind.Resolved.Inline" Color="#22524D" />
+      <SolidColorBrush x:Key="DW.Kind.Resolved.Mark" Color="#4FB8A5" />
+      <SolidColorBrush x:Key="DW.Kind.Error.Line" Color="#3A2412" />
+      <SolidColorBrush x:Key="DW.Kind.Error.Inline" Color="#6B3F18" />
+      <SolidColorBrush x:Key="DW.Kind.Error.Mark" Color="#E69F00" />
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>
