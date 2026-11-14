@@ -3,8 +3,7 @@
 Owner: CORE. APP requests changes in `docs/CONTRACT-REQUESTS.md`; answers and API changes are recorded in the
 changelog at the end of this file.
 
-Status legend: **ready** = implemented and tested, **stub** = signature final, body throws `NotImplementedException`
-until implemented (see changelog).
+Status: since v2 everything listed here is implemented and tested (no stubs remain).
 
 All line numbers, rows, region and pane indexes are **0-based**. Lines never contain terminators.
 Everything in Core is UI-free. Unless stated otherwise, types are immutable and thread-safe; `MergeSession` is the
@@ -26,17 +25,17 @@ exception (single-threaded, use it on the UI thread).
 | API | Status |
 | --- | --- |
 | `DiffOptions { Algorithm (Myers/Patience/Histogram), Whitespace (None/IgnoreTrailing/IgnoreAmount/IgnoreAll), IgnoreCase, IgnoreBlankLines, Minimal }` (record, `DiffOptions.Default`) | ready |
-| `LineDiffer.Diff(a, b, options, ct) → DiffResult { Hunks, LineCountA, LineCountB, AreEqual, EditCount }` | stub |
+| `LineDiffer.Diff(a, b, options, ct) → DiffResult { Hunks, LineCountA, LineCountB, AreEqual, EditCount }` | ready |
 | `DiffHunk(StartA, CountA, StartB, CountB, IsIgnorable)`; `IsIgnorable` = blank-line-only hunk with `IgnoreBlankLines` | ready |
-| `LineDiffer.Normalize / LinesEqual / EqualIgnoringWhitespace / IsBlank` | stub |
-| `InlineDiffer.Diff(left, right, InlineDiffOptions { Granularity Word/Character, Whitespace, IgnoreCase, MergeGap }) → InlineDiffResult { Left, Right : TextRange[] }` | stub |
+| `LineDiffer.Normalize / LinesEqual / EqualIgnoringWhitespace / IsBlank` | ready |
+| `InlineDiffer.Diff(left, right, InlineDiffOptions { Granularity Word/Character, Whitespace, IgnoreCase, MergeGap }) → InlineDiffResult { Left, Right : TextRange[] }` | ready |
 | `LineRange(Start, Count)`, `TextRange(Start, Length)` | ready |
 | `LineAlignment` (abstract): `PaneCount`, `RowCount`, `GetLine(row, pane)` (−1 = filler), `GetRowKind(row)`, `GetRow(pane, line)`, `GetNearestLine(row, pane)`, `GetLineCount(pane)`, `DifferenceGroups`, `FindGroupAt(row)`, `FindNextGroup(row, skipWs)`, `FindPreviousGroup(row, skipWs)` | ready |
 | `RowKind { Equal, Changed, Added, Removed, Conflict, WhitespaceOnly }` | ready |
 | `DifferenceGroup(Index, StartRow, RowCount, Kind, IsWhitespaceOnly)` | ready |
-| `TwoWayAlignment.Create(a, b, options, ct)`: panes `PaneA=0`, `PaneB=1`; `.Diff`, `.LinesA`, `.LinesB` | stub |
-| `ThreeWayAlignment.Create(base, left, right, options, ct)`: panes `BasePane=0`, `LeftPane=1`, `RightPane=2`; `GetChange(row) : ThreeWayChange`, `GetChunkIndex(row)`, `Chunks` | stub |
-| `Diff3.Compute(base, left, right, options, ct) → Diff3Chunk(Change, Base, Left, Right)[]` | stub |
+| `TwoWayAlignment.Create(a, b, options, ct)`: panes `PaneA=0`, `PaneB=1`; `.Diff`, `.LinesA`, `.LinesB`; `TwoWayAlignment.FromDiff(a, b, diff, options)` | ready |
+| `ThreeWayAlignment.Create(base, left, right, options, ct)`: panes `BasePane=0`, `LeftPane=1`, `RightPane=2`; `GetChange(row) : ThreeWayChange`, `GetChunkIndex(row)`, `Chunks`; `ThreeWayAlignment.FromChunks(base, left, right, chunks, options)` | ready |
+| `Diff3.Compute(base, left, right, options, ct) → Diff3Chunk(Change, Base, Left, Right)[]` | ready |
 
 Two-way row kinds: `Added` = only in B (filler in A), `Removed` = only in A, `Changed` = paired lines that differ,
 `WhitespaceOnly` = paired lines that differ only in whitespace, blank added/removed lines, lines equal only thanks
@@ -46,12 +45,12 @@ to whitespace/case options, rows of ignorable hunks. Three-way: `Changed` (one s
 
 ## 3. `DiffWeave.Core.Merge`
 
-`MergeSession.Create(base, left, right, MergeOptions? options, ct)` (stub until v2) — then:
+`MergeSession.Create(base, left, right, MergeOptions? options, ct)` (ready) — then:
 
 | Member | Notes |
 | --- | --- |
 | `Regions : MergeRegion(Index, Kind, Base, Left, Right, IsWhitespaceOnlyConflict)` | immutable, covers all lines; `RegionKind { Stable, LeftChanged, RightChanged, BothChangedSame, Conflict }` |
-| `GetResolution(region) : RegionResolution(Choice, CustomLines)` | `ResolutionChoice { Unresolved, Base, Left, Right, LeftThenRight, RightThenLeft, Custom }`. Stable regions start as `Base`, others `Unresolved`. |
+| `GetResolution(region) : RegionResolution(Choice, CustomLines)`, `GetLinesForChoice(region, choice)`, `GetCurrentLines(region)` | `ResolutionChoice { Unresolved, Base, Left, Right, LeftThenRight, RightThenLeft, Custom }`. Stable regions start as `Base`, others `Unresolved`. |
 | `AutoResolve() : int` | KDiff3 semantics, one undo step; App calls it right after `Create` (unless the user disabled auto-merge). |
 | `Resolve(region, choice)`, `ResolveCustom(region, lines)`, `Unresolve(region)` | one undo step each |
 | `ApplyManualEdit(outputStart, removedCount, insertedLines) : int[]` | hand edits of the OUTPUT pane; mapping rules in XML doc |
@@ -73,7 +72,7 @@ EOL/encoding preference) then `outputDoc.Save(path)`.
 ## 4. `DiffWeave.Core.Directories`
 
 `DirectoryComparer.CompareAsync(roots (2 or 3), DirectoryCompareOptions?, IProgress<DirectoryCompareProgress>?, ct)
-→ DirectoryComparisonResult { Roots, Root : DirectoryComparisonNode }` (stub).
+→ DirectoryComparisonResult { Roots, Root : DirectoryComparisonNode, CountFilesByStatus() }` (ready).
 Node: `Name`, `RelativePath` ('/'-separated), `Sides : DirectoryEntrySide(Kind, FullPath, Size, LastWriteTimeUtc, LinkTarget)[]`,
 `Status : EntryStatus { Identical, Different, OnlyInA, OnlyInB, OnlyInC, MissingInA, MissingInB, MissingInC, TypeMismatch, Error }`,
 `EqualSides : SidesEqual flags (AB, AC, BC)`, `Children` (directories first, then name), `IsDirectory`, `Error`.
@@ -116,3 +115,11 @@ The App should define brushes for those keys in its themes.
 ## Changelog
 
 - **v1** — initial API surface (Text, Extensibility, Plugins: ready; Diff algorithms, alignments, merge, directories: stubs).
+- **v2** — all stubs implemented. Additions (non-breaking): `TwoWayAlignment.FromDiff`, `ThreeWayAlignment.FromChunks`,
+  `MergeSession.GetCurrentLines`, `CommandRegistry.Find`. Behaviour notes for the UI:
+  - Performance: `LineDiffer`/`TwoWayAlignment.Create` on 200k-line files with thousands of edits take well under a
+    second; still call them off the UI thread (`Task.Run`) and pass a `CancellationToken`.
+  - With whitespace/case ignored, lines equal under the options but textually different are `RowKind.WhitespaceOnly`
+    rows (so they form difference groups flagged `IsWhitespaceOnly`; use `skipWhitespaceOnly` for navigation).
+  - In merges, stable regions always output the base text.
+  - Plugin settings event handlers are removed automatically on unload.
