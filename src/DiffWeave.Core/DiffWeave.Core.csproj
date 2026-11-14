@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Text model, diff algorithms, three-way merge engine, directory comparison. No UI dependencies. -->
+  <PropertyGroup>
+    <RootNamespace>DiffWeave.Core</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DiffWeave.Extensibility\DiffWeave.Extensibility.csproj" />
+  </ItemGroup>
+</Project>

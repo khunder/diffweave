@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DiffWeave.Extensibility/DiffWeave.Extensibility.csproj" />
+    <Project Path="src/DiffWeave.Core/DiffWeave.Core.csproj" />
+    <Project Path="src/DiffWeave.App/DiffWeave.App.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DiffWeave.Core.Tests/DiffWeave.Core.Tests.csproj" />
+    <Project Path="tests/DiffWeave.App.Tests/DiffWeave.App.Tests.csproj" />
+  </Folder>
+</Solution>

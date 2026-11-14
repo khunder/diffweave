@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The public extension API (plugins, merge assistants, editor extensions). It has no dependencies on purpose. -->
+  <PropertyGroup>
+    <RootNamespace>DiffWeave.Extensibility</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+</Project>
