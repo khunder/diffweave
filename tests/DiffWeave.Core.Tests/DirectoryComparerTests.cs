@@ -130,6 +130,31 @@ public class DirectoryComparerTests
     }
 
     [Test]
+    public async Task Followed_file_links_compare_by_content_like_git_difftool_dir_diff()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Symlink creation needs privileges on Windows.");
+        }
+
+        // git difftool -d puts the working-tree side in a temp folder of symlinks to the real files.
+        using var tmp = new TempDir();
+        tmp.File("left/same.txt", "x\n");
+        tmp.File("left/changed.txt", "old\n");
+        tmp.File("work/same.txt", "x\n");
+        tmp.File("work/changed.txt", "newer\n");
+        Directory.CreateDirectory(Path.Combine(tmp.Path, "right"));
+        File.CreateSymbolicLink(Path.Combine(tmp.Path, "right", "same.txt"), Path.Combine(tmp.Path, "work", "same.txt"));
+        File.CreateSymbolicLink(Path.Combine(tmp.Path, "right", "changed.txt"), Path.Combine(tmp.Path, "work", "changed.txt"));
+        string[] roots = [Path.Combine(tmp.Path, "left"), Path.Combine(tmp.Path, "right")];
+
+        DirectoryComparisonResult r = await DirectoryComparer.CompareAsync(roots, new DirectoryCompareOptions { Mode = DirectoryCompareMode.SizeAndTimeThenContent, Symlinks = SymlinkHandling.Follow });
+        Find(r, "same.txt").Status.Should().Be(EntryStatus.Identical);
+        Find(r, "changed.txt").Status.Should().Be(EntryStatus.Different);
+        Find(r, "changed.txt").Sides[1].Kind.Should().Be(EntryKind.File);
+    }
+
+    [Test]
     public async Task Cancellation_and_progress()
     {
         using var tmp = new TempDir();

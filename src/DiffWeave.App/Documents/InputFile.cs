@@ -64,6 +64,9 @@ public sealed class InputFile
         return new InputFile(full, label ?? System.IO.Path.GetFileName(full), doc, File.GetLastWriteTimeUtc(full));
     }
 
+    /// <summary>True for the null device that git passes for the missing side of an added or deleted file.</summary>
+    public static bool IsNullDevice(string path) => path is "/dev/null" || string.Equals(path, "NUL", StringComparison.OrdinalIgnoreCase);
+
     /// <summary>An empty, unnamed input.</summary>
     public static InputFile Empty(string label) => new(null, label, TextDocument.Empty, default);
 

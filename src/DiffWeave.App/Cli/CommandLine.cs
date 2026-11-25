@@ -103,6 +103,8 @@ public static class CommandLineParser
               --auto             Merge without UI when no conflicts remain unresolved; write the output and exit 0.
                                  Otherwise the window opens so that the conflicts can be resolved.
               --qall             Quiet: with --auto never open the window (exit 1 if conflicts remain).
+              --noauto           Accepted for KDiff3 compatibility (the window opens; this is the default).
+                                 --auto-none is a synonym. --cs/--config VALUE are accepted and ignored.
           -h, --help             Show this help.
               --version          Show the version.
 
@@ -219,8 +221,11 @@ public static class CommandLineParser
                     }
 
                     break;
-                case "--cs" or "--confighelp" or "-u":
-                    if (name == "--cs")
+                case "--noauto" or "--auto-none":
+                    // KDiff3 compatibility: the default already opens the window, nothing to do.
+                    break;
+                case "--cs" or "--config" or "--confighelp" or "-u" or "--query":
+                    if (name is "--cs" or "--config")
                     {
                         NextValue();
                     }

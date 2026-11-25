@@ -200,7 +200,7 @@ public sealed class DirectoryDocument
     /// <summary>Runs the comparison (on the thread pool) and rebuilds the rows.</summary>
     public async Task CompareAsync(CancellationToken cancellationToken = default)
     {
-        DirectoryComparisonResult result = await DirectoryComparer.CompareAsync(Roots, new DirectoryCompareOptions { Mode = DirectoryCompareMode.SizeAndTimeThenContent }, null, cancellationToken).ConfigureAwait(true);
+        DirectoryComparisonResult result = await DirectoryComparer.CompareAsync(Roots, new DirectoryCompareOptions { Mode = DirectoryCompareMode.SizeAndTimeThenContent, Symlinks = SymlinkHandling.Follow }, null, cancellationToken).ConfigureAwait(true);
         Result = result;
         if (_expanded.Count == 0)
         {

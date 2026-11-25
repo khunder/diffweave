@@ -64,6 +64,16 @@ public class NonInteractiveTests
     }
 
     [Test]
+    public void Dev_null_base_is_an_empty_base()
+    {
+        string l = Write("left", "same\n");
+        string r = Write("right", "same\n");
+        string o = Path.Combine(_dir, "out");
+        Run("--auto", "-o", o, "/dev/null", l, r).Should().Be(ExitCodes.Success);
+        File.ReadAllText(o).Should().Be("same\n");
+    }
+
+    [Test]
     public void Diffs_are_never_handled_non_interactively()
         => Run("a", "b").Should().BeNull();
 

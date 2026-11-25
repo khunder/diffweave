@@ -110,6 +110,40 @@ public class CommandLineParserTests
     }
 
     [Test]
+    public void Git_extensions_kdiff3_merge_command_is_understood()
+    {
+        // Git Extensions' kdiff3 preset: "$BASE" "$LOCAL" "$REMOTE" -o "$MERGED" (no --auto: the window opens).
+        CommandLineOptions o = Parse("f_BASE.txt", "f_LOCAL.txt", "f_REMOTE.txt", "-o", "f.txt");
+        o.Mode.Should().Be(LaunchMode.FileMerge);
+        o.Auto.Should().BeFalse();
+        o.Inputs.Should().Equal("f_BASE.txt", "f_LOCAL.txt", "f_REMOTE.txt");
+        o.Output.Should().Be("f.txt");
+    }
+
+    [Test]
+    public void Git_kdiff3_two_way_merge_and_diff_are_understood()
+    {
+        CommandLineOptions merge = Parse("--auto", "--L1", "f (Local)", "--L2", "f (Remote)", "-o", "f", "f.LOCAL", "f.REMOTE");
+        merge.Mode.Should().Be(LaunchMode.FileMerge);
+        merge.Inputs.Should().Equal("f.LOCAL", "f.REMOTE");
+        merge.Labels.Should().Equal("f (Local)", "f (Remote)", null);
+
+        CommandLineOptions diff = Parse("--L1", "f (A)", "--L2", "f (B)", "/dev/null", "f.REMOTE");
+        diff.Mode.Should().Be(LaunchMode.FileDiff);
+        diff.Inputs.Should().Equal("/dev/null", "f.REMOTE");
+    }
+
+    [Test]
+    public void Other_kdiff3_options_are_accepted()
+    {
+        Parse("--noauto", "a", "b", "c", "-o", "o").Mode.Should().Be(LaunchMode.FileMerge);
+        Parse("--auto-none", "a", "b").Warnings.Should().BeEmpty();
+        CommandLineOptions o = Parse("--cs", "WhiteSpaceEqual=1", "--config", "kdiff3rc", "a", "b");
+        o.Inputs.Should().Equal("a", "b");
+        o.Warnings.Should().HaveCount(2);
+    }
+
+    [Test]
     public void Usage_mentions_every_option()
     {
         foreach (string opt in new[] { "--merge", "--output", "--base", "--L1", "--fname", "--auto", "--qall", "--help", "--version" })

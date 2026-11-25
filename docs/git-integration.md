@@ -76,6 +76,39 @@ git difftool HEAD~1 -- src/   # one window per changed file
 git difftool --dir-diff HEAD~1 # compare whole trees in the directory view
 ```
 
+## Drop-in replacement for KDiff3
+
+DiffWeave accepts KDiff3's command line, so anything configured for KDiff3 can call DiffWeave instead:
+
+* **git's built-in `kdiff3` driver**: keep `merge.tool=kdiff3` / `diff.tool=kdiff3` and point the path at DiffWeave:
+
+  ```sh
+  git config --global mergetool.kdiff3.path /path/to/diffweave
+  git config --global difftool.kdiff3.path /path/to/diffweave
+  ```
+
+  git then runs `--auto --L1 … --L2 … [--L3 …] -o "$MERGED" [$BASE] $LOCAL $REMOTE` for merges (two inputs when the
+  base is missing) and `--L1 … --L2 … $LOCAL $REMOTE` for diffs; `/dev/null` (the missing side of an added or deleted
+  file) shows as an empty pane. `git difftool -d` works too: the working-tree symlinks git creates are followed and
+  compared by content.
+* **Git Extensions**: use the KDiff3 argument layout with the DiffWeave executable as the path:
+
+  | Setting | Value |
+  | --- | --- |
+  | Merge tool command | `/path/to/diffweave "$BASE" "$LOCAL" "$REMOTE" -o "$MERGED"` |
+  | Diff tool command | `/path/to/diffweave "$LOCAL" "$REMOTE"` |
+
+  Keep `mergetool.<tool>.trustExitCode = true`: closing without saving a fully resolved merge exits `1`, so the
+  file stays conflicted.
+
+Other KDiff3 options are accepted for compatibility: `--noauto` and `--auto-none` (the window opens, which is the
+default anyway), and `--cs VALUE`, `--config FILE`, `--confighelp`, `--query` and `-u` (ignored with a warning). One
+difference: in DiffWeave `--qall` means "never open the window from `--auto`".
+
+If DiffWeave is a framework-dependent build and the .NET runtime is in a private folder, `DOTNET_ROOT` must be set in
+the environment Git Extensions runs in, or use a self-contained build
+(`dotnet publish src/DiffWeave.App -c Release -r linux-x64 --self-contained -o out/diffweave`).
+
 ## Command line reference
 
 ```

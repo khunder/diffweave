@@ -35,7 +35,9 @@ public static class NonInteractive
             {
                 string path = options.Inputs[i];
                 string? label = i < options.Labels.Count ? options.Labels[i] : null;
-                inputs.Add(File.Exists(path) ? InputFile.Load(path, label) : InputFile.FromText(label ?? path, string.Empty, path));
+                inputs.Add(InputFile.IsNullDevice(path) ? InputFile.FromText(label ?? "(no file)", string.Empty)
+                    : File.Exists(path) ? InputFile.Load(path, label)
+                    : InputFile.FromText(label ?? path, string.Empty, path));
             }
 
             InputFile? baseFile = inputs.Count == 3 ? inputs[0] : null;

@@ -192,12 +192,15 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDocumentHos
 
     private static async Task<InputFile> LoadInputAsync(string path, string? label)
     {
-        if (!File.Exists(path))
+        if (InputFile.IsNullDevice(path))
         {
-            if (path is "/dev/null" or "NUL" || !Path.Exists(path))
-            {
-                return InputFile.FromText(label ?? Path.GetFileName(path) + " (missing)", string.Empty, Path.GetFullPath(path));
-            }
+            // git passes /dev/null for the missing side of an added or deleted file.
+            return InputFile.FromText(label ?? "(no file)", string.Empty);
+        }
+
+        if (!File.Exists(path) && !Path.Exists(path))
+        {
+            return InputFile.FromText(label ?? Path.GetFileName(path) + " (missing)", string.Empty, Path.GetFullPath(path));
         }
 
         return await InputFile.LoadAsync(path, label);
